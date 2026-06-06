@@ -1,0 +1,69 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+
+export default function RegisterPage() {
+  const { register } = useAuth()
+  const navigate = useNavigate()
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    if (password.length < 8) { setError('Parool peab olema vähemalt 8 tähemärki pikk'); return }
+    setLoading(true)
+    try {
+      await register(name, email, password)
+      navigate('/ulevaade')
+    } catch (err) {
+      setError(err.message || 'Registreerimine ebaõnnestus')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-[#f5f5f3] flex items-center justify-center">
+      <div className="bg-white rounded-2xl shadow-sm border border-black/10 p-10 w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="inline-block bg-[#7F77DD] text-white text-xl font-bold px-6 py-3 rounded-xl mb-4">EduAI</div>
+          <h1 className="text-2xl font-bold text-gray-900">Loo konto</h1>
+          <p className="text-gray-500 text-sm mt-1">Registreeru õpetajana</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nimi</label>
+            <input type="text" value={name} onChange={e => setName(e.target.value)} required
+              placeholder="Sinu täisnimi"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#7F77DD]" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">E-post</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
+              placeholder="sinu@kool.ee"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#7F77DD]" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Parool</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
+              placeholder="Vähemalt 8 tähemärki"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#7F77DD]" />
+          </div>
+          {error && <div className="bg-[#FCEBEB] text-[#A32D2D] text-sm px-4 py-2.5 rounded-lg">{error}</div>}
+          <button type="submit" disabled={loading}
+            className="w-full bg-[#7F77DD] hover:bg-[#534AB7] text-white font-medium rounded-lg py-2.5 text-sm transition-colors disabled:opacity-50">
+            {loading ? 'Loon kontot...' : 'Registreeru'}
+          </button>
+        </form>
+        <p className="text-center text-sm text-gray-500 mt-6">
+          On juba konto?{' '}
+          <Link to="/login" className="text-[#7F77DD] hover:underline font-medium">Logi sisse</Link>
+        </p>
+      </div>
+    </div>
+  )
+}
