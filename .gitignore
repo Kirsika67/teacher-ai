@@ -37,6 +37,7 @@ yarn-error.log*
 # EduAI build / local data
 /client/dist
 /client/node_modules
+/data/
 /server/data/*.db
 /server/data/*.db-*
 
